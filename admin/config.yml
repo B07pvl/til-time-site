@@ -1,0 +1,43 @@
+backend:
+  name: git-gateway
+  branch: main # или master (зависит от названия ветки в GitHub)
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "materials"
+    label: "Оқу материалдары"
+    folder: "content/materials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Тақырыбы / Название", name: "title", widget: "string" }
+      - {
+          label: "Бөлім / Раздел",
+          name: "category",
+          widget: "select",
+          options: [
+            "Жаңа сөздер",
+            "Аудио және бейне",
+            "«Тілашар» үйірмесі",
+            "Ата-аналарға кеңес",
+            "Кері байланыс",
+            "Педагогикалық Тәжірибием",
+            "«Адал азамат» біртұтас тәрбие"
+          ]
+        }
+      - {
+          label: "Жас мөлшері (тек 3-5 жас бөлімі үшін) / Возраст",
+          name: "age",
+          widget: "select",
+          required: false,
+          options: [
+            "3 жас",
+            "4 жас",
+            "5 жас"
+          ]
+        }
+      - { label: "Мазмұны / Описание или ссылка", name: "body", widget: "markdown", required: false }
+      - { label: "Файл (PDF немесе Word)", name: "file", widget: "file", required: false }
+      - { label: "Күні / Дата", name: "date", widget: "datetime" }
