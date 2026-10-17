@@ -6,6 +6,7 @@
   <title>Басқару панелі | Тіл-Time</title>
 </head>
 <body>
+  <!-- Подключаем Sveltia CMS -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
   
   <script>
@@ -14,7 +15,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       CMS.init({
         config: {
-          load_config_file: false, // <--- ОТКЛЮЧАЕМ ПОИСК ВНЕШНЕГО config.yml
+          load_config_file: false,
           backend: {
             name: 'github',
             repo: 'B07pvl/til-time-site',
@@ -40,21 +41,76 @@
                     'Аудио және бейне',
                     '«Тілашар» үйірмесі',
                     'Ата-аналарға кеңес',
-                    'Кері байланыс',
                     'Педагогикалық Тәжірибием',
-                    '«Адал азамат» біртұтас тәрбие'
+                    '«Адал азамат» біртұтас тәрбие',
+                    'Педагогтерге әдістемелік көмек',
+                    'Тәрбиешілерге',
+                    'Кері байланыс'
                   ]
                 },
                 {
-                  label: 'Жас мөлшері (тек 3-5 жас бөлімі үшін) / Возраст',
+                  label: 'Педагогтерге подкатегориясы',
+                  name: 'pedagog_subcategory',
+                  widget: 'select',
+                  required: false,
+                  options: [
+                    'Нормативтік құжаттар',
+                    'Перспективалық жоспарлар',
+                    'Ұйымдастырылған іс-әрекет үлгілері',
+                    'Авторлық бағдарламалар',
+                    'Интерактивті ойындар',
+                    'Жасанды интеллект құралдары',
+                    'Мониторинг және диагностика',
+                    'Әдістемелік әзірлемелер',
+                    'Тәжірибе алмасу'
+                  ]
+                },
+                {
+                  label: 'Тәрбиешілерге подкатегориясы',
+                  name: 'educator_subcategory',
+                  widget: 'select',
+                  required: false,
+                  options: [
+                    'Ортаңғы топ (3 жас)',
+                    'Ересек топ (4 жас)',
+                    'Мектепалды топ (5 жас)',
+                    'Күнделікті қолданылатын қазақша сөздер',
+                    'Режимдік сәттердегі тілдік қарым-қатынас',
+                    'Дидактикалық ойындар',
+                    'Көрнекіліктер мен карточкалар',
+                    'Жүктеуге арналған материалдар'
+                  ]
+                },
+                {
+                  label: 'Жас мөлшері (3-5 жас)',
                   name: 'age',
                   widget: 'select',
                   required: false,
                   options: ['3 жас', '4 жас', '5 жас']
                 },
-                { label: 'Мазмұны / Описание или ссылка', name: 'body', widget: 'markdown', required: false },
-                { label: 'Файл (PDF немесе Word)', name: 'file', widget: 'file', required: false },
+                { label: 'Мазмұны / Описание', name: 'body', widget: 'markdown', required: false },
+                { label: 'Файл (PDF, Word)', name: 'file', widget: 'file', required: false },
                 { label: 'Күні / Дата', name: 'date', widget: 'datetime' }
+              ]
+            },
+            {
+              name: 'feedback',
+              label: 'Кері байланыс (Пікірлер мен сұрақтар)',
+              folder: 'content/feedback',
+              create: true,
+              slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
+              fields: [
+                { label: 'Аты-жөні / Имя пользователя', name: 'author', widget: 'string' },
+                { label: 'E-mail / Контакт', name: 'email', widget: 'string', required: false },
+                { label: 'Хабарлама / Сообщение', name: 'message', widget: 'text' },
+                { label: 'Күні / Дата', name: 'date', widget: 'datetime' },
+                {
+                  label: 'Статус ответа',
+                  name: 'status',
+                  widget: 'select',
+                  options: ['Жаңа (Новое)', 'Жауап берілді (Отвечено)']
+                },
+                { label: 'Педагогтің жауабы / Ответ педагога', name: 'reply', widget: 'markdown', required: false }
               ]
             }
           ]
