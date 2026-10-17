@@ -77,8 +77,8 @@
           <button onclick="filterCategory('all')" id="cat-all" class="cat-btn active w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition flex items-center justify-between bg-emerald-50 text-emerald-700">
             <span>Барлығы</span>
           </button>
-          <button onclick="filterCategory('Қазақ тілі «Тілге бойлау»')" id="cat-words" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Қазақ тілі «Тілге бойлау»</span>
+          <button onclick="filterCategory('Қазақ тілі*** «Тілге бойлау»')" id="cat-words" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Қазақ тілі*** «Тілге бойлау»</span>
           </button>
           <button onclick="filterCategory('Аудио және бейнежазбалар')" id="cat-media" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Аудио және бейнежазбалар</span>
@@ -136,4 +136,328 @@
               <input type="text" id="comment-name" required placeholder="Мұғалім немесе Ата-ана" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
             <div>
-              <label id="lbl-msg" class="block text-xs font-semibold text-slate-600 mb-1">Пікіріңіз неме
+              <label id="lbl-msg" class="block text-xs font-semibold text-slate-600 mb-1">Пікіріңіз немесе сұрағыңыз / Сообщение *</label>
+              <textarea id="comment-text" required rows="3" placeholder="Мәтінді осында жазыңыз..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            </div>
+            <button type="submit" id="submit-btn" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition">
+              Жіберу / Отправить
+            </button>
+            <div id="form-status" class="hidden text-xs font-medium py-2"></div>
+          </form>
+        </div>
+
+        <div class="space-y-4">
+          <h4 id="fb-list-title" class="text-md font-bold text-slate-800">Пікірлер мен сұрақтар</h4>
+          <div id="comments-list" class="space-y-4">
+            <div id="comments-loading" class="text-center py-6 text-slate-400 text-sm">Пікірлер жүктелуде...</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+    © Тіл-Time | Павлодар Дошкольная Гимназия
+  </footer>
+
+  <script>
+    let allMaterials = [];
+    let allFeedback = [];
+    let currentCategory = 'all';
+    let selectedAge = null;
+    let currentLang = 'kk';
+
+    const translations = {
+      kk: {
+        subtitle: "«Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК",
+        desc: "Қазақ тілі педагогінің электронды әдістемелік ұсынымдары",
+        ageFilterTitle: "👨‍👩‍👧 Ата-аналарға (Бала жасы бойынша):",
+        age3: "3 жастағы балалар",
+        age4: "4 жастағы балалар",
+        age5: "5 жастағы балалар",
+        categoriesTitle: "Категориялар",
+        catAll: "Барлығы",
+        catWords: "Қазақ тілі*** «Тілге бойлау»",
+        catMedia: "Аудио және бейнежазбалар",
+        catTilashar: "«Тілашар» үйірмесі",
+        catParents: "Ата-аналарға кеңес",
+        catExperience: "Педагогикалық тәжірибем",
+        catAdal: "«Адал азамат» біртұтас тәрбие",
+        catPedagog: "Қазақ тілі педагогтеріне әдістемелік көмек",
+        catEducator: "Тәрбиешілерге әдістемелік көмек",
+        catFeedback: "💬 Кері байланыс",
+        clearAge: "Сүзгіні тазалау (Барлығын көрсету)",
+        activeAgePrefix: "Сүзгі белсенді:",
+        formatAgeBadge: (age) => {
+          const num = age.replace(/[^0-9]/g, '');
+          return `${num} жастағы балалар`;
+        },
+        downloadFile: "📥 Файлды жүктеу",
+        noMaterials: "Бұл талаптар бойынша әлі материалдар жоқ.",
+        loading: "Материалдар жүктелуде...",
+        fbTitle: "💬 Сұрақ немесе пікір қалдыру",
+        fbDesc: "Тіркелусіз тез арада пікіріңізді немесе сұрағыңызды жазып қалдыра аласыз.",
+        lblName: "Сіздің атыңыз / Ваше имя *",
+        lblMsg: "Пікіріңіз немесе сұрағыңыз / Сообщение *",
+        submitBtn: "Жіберу / Отправить",
+        fbListTitle: "Пікірлер мен сұрақтар",
+        noComments: "Әлі ешкім пікір қалдырмады. Алғашқы болып жазыңыз!",
+        teacherReply: "👩‍🏫 Педагогтің жауабы:"
+      },
+      ru: {
+        subtitle: "КГКП «Дошкольная гимназия №42 города Павлодара»",
+        desc: "Электронные методические рекомендации педагога казахского языка",
+        ageFilterTitle: "👨‍👩‍👧 Родителям (По возрасту ребенка):",
+        age3: "Дети 3 лет",
+        age4: "Дети 4 лет",
+        age5: "Дети 5 лет",
+        categoriesTitle: "Категории",
+        catAll: "Все материалы",
+        catWords: "Казахский язык*** «Тілге бойлау»",
+        catMedia: "Аудио и видеозаписи",
+        catTilashar: "Кружок «Тілашар»",
+        catParents: "Советы родителям",
+        catExperience: "Педагогический опыт",
+        catAdal: "Единое воспитание «Адал азамат»",
+        catPedagog: "Методическая помощь педагогам казахского языка",
+        catEducator: "Методическая помощь воспитателям",
+        catFeedback: "💬 Обратная связь",
+        clearAge: "Сбросить фильтр (Показать все)",
+        activeAgePrefix: "Активен фильтр:",
+        formatAgeBadge: (age) => {
+          const num = age.replace(/[^0-9]/g, '');
+          return `Дети ${num} лет`;
+        },
+        downloadFile: "📥 Скачать файл",
+        noMaterials: "В этом разделе пока нет материалов.",
+        loading: "Загрузка материалов...",
+        fbTitle: "💬 Оставить вопрос или отзыв",
+        fbDesc: "Вы можете быстро оставить сообщение без регистрации.",
+        lblName: "Ваше имя *",
+        lblMsg: "Ваш отзыв или вопрос *",
+        submitBtn: "Отправить",
+        fbListTitle: "Отзывы и вопросы",
+        noComments: "Пока нет отзывов. Будьте первыми!",
+        teacherReply: "👩‍🏫 Ответ педагога:"
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+
+      const kkBtn = document.getElementById('lang-kk-btn');
+      const ruBtn = document.getElementById('lang-ru-btn');
+      if (lang === 'kk') {
+        kkBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition bg-amber-500 text-slate-950";
+        ruBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300";
+      } else {
+        ruBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition bg-amber-500 text-slate-950";
+        kkBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300";
+      }
+
+      document.getElementById('header-subtitle').innerText = t.subtitle;
+      document.getElementById('header-desc').innerText = t.desc;
+      document.getElementById('age-filter-title').innerText = t.ageFilterTitle;
+      document.getElementById('age-3-text').innerText = t.age3;
+      document.getElementById('age-4-text').innerText = t.age4;
+      document.getElementById('age-5-text').innerText = t.age5;
+      document.getElementById('categories-title').innerText = t.categoriesTitle;
+
+      document.querySelector('#cat-all span').innerText = t.catAll;
+      document.querySelector('#cat-words span').innerText = t.catWords;
+      document.querySelector('#cat-media span').innerText = t.catMedia;
+      document.querySelector('#cat-tilashar span').innerText = t.catTilashar;
+      document.querySelector('#cat-parents span').innerText = t.catParents;
+      document.querySelector('#cat-experience span').innerText = t.catExperience;
+      document.querySelector('#cat-adal span').innerText = t.catAdal;
+      document.querySelector('#cat-pedagog span').innerText = t.catPedagog;
+      document.querySelector('#cat-educator span').innerText = t.catEducator;
+      document.querySelector('#cat-feedback span').innerText = t.catFeedback;
+
+      document.getElementById('clear-age-btn').innerText = t.clearAge;
+      document.getElementById('fb-form-title').innerText = t.fbTitle;
+      document.getElementById('fb-form-desc').innerText = t.fbDesc;
+      document.getElementById('lbl-name').innerText = t.lblName;
+      document.getElementById('lbl-msg').innerText = t.lblMsg;
+      document.getElementById('submit-btn').innerText = t.submitBtn;
+      document.getElementById('fb-list-title').innerText = t.fbListTitle;
+
+      if (selectedAge) {
+        document.getElementById('active-age-text').innerText = `${t.activeAgePrefix} ${t.formatAgeBadge(selectedAge)}`;
+      }
+
+      renderMaterials();
+      renderComments();
+    }
+
+    async function loadContent() {
+      try {
+        const response = await fetch('https://api.github.com/repos/B07pvl/til-time-site/contents/content/materials');
+        if (response.ok) {
+          const files = await response.json();
+          allMaterials = await Promise.all(files.map(async file => {
+            const res = await fetch(file.download_url);
+            return parseMarkdown(await res.text());
+          }));
+        }
+
+        const fbResponse = await fetch('https://api.github.com/repos/B07pvl/til-time-site/contents/content/feedback');
+        if (fbResponse.ok) {
+          const fbFiles = await fbResponse.json();
+          allFeedback = await Promise.all(fbFiles.map(async file => {
+            const res = await fetch(file.download_url);
+            return parseMarkdown(await res.text());
+          }));
+        }
+
+        renderMaterials();
+        renderComments();
+      } catch (err) {
+        document.getElementById('materials-list').innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">${translations[currentLang].noMaterials}</div>`;
+      }
+    }
+
+    function parseMarkdown(text) {
+      const frontMatterMatch = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!frontMatterMatch) return { body: text };
+      const yaml = frontMatterMatch[1];
+      const body = frontMatterMatch[2];
+      const meta = {};
+      yaml.split('\n').forEach(line => {
+        const [key, ...value] = line.split(':');
+        if (key && value) meta[key.trim()] = value.join(':').trim().replace(/^['"]|['"]$/g, '');
+      });
+      return { ...meta, body };
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      const materialsList = document.getElementById('materials-list');
+      const feedbackSection = document.getElementById('feedback-section');
+
+      if (cat === 'Кері байланыс') {
+        materialsList.classList.add('hidden');
+        feedbackSection.classList.remove('hidden');
+      } else {
+        feedbackSection.classList.add('hidden');
+        materialsList.classList.remove('hidden');
+        renderMaterials();
+      }
+    }
+
+    function filterAge(age) {
+      selectedAge = age;
+      const badge = document.getElementById('active-age-badge');
+      const badgeText = document.getElementById('active-age-text');
+      const t = translations[currentLang];
+      
+      badgeText.innerText = `${t.activeAgePrefix} ${t.formatAgeBadge(age)}`;
+      badge.classList.remove('hidden');
+
+      if (currentCategory === 'Кері байланыс') {
+        filterCategory('all');
+      } else {
+        renderMaterials();
+      }
+    }
+
+    function clearAgeFilter() {
+      selectedAge = null;
+      document.getElementById('active-age-badge').classList.add('hidden');
+      renderMaterials();
+    }
+
+    function renderMaterials() {
+      const list = document.getElementById('materials-list');
+      const t = translations[currentLang];
+      
+      let filtered = allMaterials.filter(m => m.is_private !== 'true' && m.is_private !== true);
+
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(m => m.category === currentCategory);
+      }
+
+      if (selectedAge) {
+        filtered = filtered.filter(m => m.age === selectedAge);
+      }
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">${t.noMaterials}</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(item => `
+        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">${item.category || 'Материал'}</span>
+              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${t.formatAgeBadge(item.age)}</span>` : ''}
+              ${item.pedagog_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg">${item.pedagog_subcategory}</span>` : ''}
+              ${item.educator_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-purple-100 text-purple-800 rounded-lg">${item.educator_subcategory}</span>` : ''}
+            </div>
+            <h4 class="text-lg font-bold text-slate-800 mb-2">${item.title || 'Тақырыпсыз'}</h4>
+            <div class="text-sm text-slate-600 mb-4 line-clamp-3">${marked.parse(item.body || '')}</div>
+          </div>
+          ${item.file ? `
+            <a href="${item.file}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition">
+              <span>${t.downloadFile}</span>
+            </a>
+          ` : ''}
+        </article>
+      `).join('');
+    }
+
+    function renderComments() {
+      const list = document.getElementById('comments-list');
+      const t = translations[currentLang];
+
+      if (allFeedback.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">${t.noComments}</div>`;
+        return;
+      }
+
+      list.innerHTML = allFeedback.map(fb => `
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-800 text-sm">👤 ${fb.author || 'Қолданушы'}</span>
+            <span class="text-xs text-slate-400">${fb.date ? new Date(fb.date).toLocaleDateString() : ''}</span>
+          </div>
+          <p class="text-sm text-slate-700">${fb.message || fb.body || ''}</p>
+
+          ${fb.reply ? `
+            <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100 text-xs text-slate-700 mt-2">
+              <span class="font-bold text-emerald-800 block mb-1">${t.teacherReply}</span>${marked.parse(fb.reply)}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function submitComment(e) {
+      e.preventDefault();
+      const status = document.getElementById('form-status');
+      const name = document.getElementById('comment-name').value;
+      const text = document.getElementById('comment-text').value;
+
+      status.className = 'text-xs font-medium py-2 text-emerald-600';
+      status.innerText = 'Жіберілуде...';
+      status.classList.remove('hidden');
+
+      allFeedback.unshift({
+        author: name,
+        message: text,
+        date: new Date().toISOString()
+      });
+      renderComments();
+
+      document.getElementById('comment-name').value = '';
+      document.getElementById('comment-text').value = '';
+      status.innerText = 'Сәтті жіберілді!';
+    }
+
+    loadContent();
+  </script>
+</body>
+</html>
