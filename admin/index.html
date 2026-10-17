@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
   
   <script>
-    // Принудительно задаем настройки бэкенда для GitHub, чтобы избежать Netlify Auth
     window.CMS_MANUAL_INIT = true;
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -19,8 +18,7 @@
           backend: {
             name: 'github',
             repo: 'B07pvl/til-time-site',
-            branch: 'main',
-            auth_type: 'implicit'
+            branch: 'main'
           },
           media_folder: 'uploads',
           public_folder: '/uploads',
