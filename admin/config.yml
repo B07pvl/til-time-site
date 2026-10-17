@@ -2,45 +2,5 @@ backend:
   name: github
   repo: B07pvl/til-time-site
   branch: main
-  base_url: https://decap-bridge.com  # <--- ВАЖНО: готовый бесплатный OAuth прокси
-  auth_endpoint: /api/v1/authorize
-
-media_folder: "uploads"
-public_folder: "/uploads"
-
-collections:
-  - name: "materials"
-    label: "Оқу материалдары"
-    folder: "content/materials"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Тақырыбы / Название", name: "title", widget: "string" }
-      - {
-          label: "Бөлім / Раздел",
-          name: "category",
-          widget: "select",
-          options: [
-            "Жаңа сөздер",
-            "Аудио және бейне",
-            "«Тілашар» үйірмесі",
-            "Ата-аналарға кеңес",
-            "Кері байланыс",
-            "Педагогикалық Тәжірибием",
-            "«Адал азамат» біртұтас тәрбие"
-          ]
-        }
-      - {
-          label: "Жас мөлшері (тек 3-5 жас бөлімі үшін) / Возраст",
-          name: "age",
-          widget: "select",
-          required: false,
-          options: [
-            "3 жас",
-            "4 жас",
-            "5 жас"
-          ]
-        }
-      - { label: "Мазмұны / Описание или ссылка", name: "body", widget: "markdown", required: false }
-      - { label: "Файл (PDF немесе Word)", name: "file", widget: "file", required: false }
-      - { label: "Күні / Дата", name: "date", widget: "datetime" }
+  base_url: https://til-time-site.baklagun000.workers.dev # Ваш адрес сайта на Cloudflare
+  auth_endpoint: /api/auth # (или стандартный метод авторизации)
