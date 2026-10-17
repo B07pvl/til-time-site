@@ -7,9 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Место для фонового фото с центровкой кадра на воспитателе */
+    /* Место для фонового фото с расширением .jpeg и центровкой кадра на воспитателе */
     .hero-banner {
-      background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpg');
+      background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpeg');
       background-size: cover;
       background-position: center 45%;
       background-repeat: no-repeat;
@@ -189,7 +189,10 @@
         catFeedback: "💬 Кері байланыс",
         clearAge: "Сүзгіні тазалау (Барлығын көрсету)",
         activeAgePrefix: "Сүзгі белсенді:",
-        forChildren: "балаларға",
+        formatAgeBadge: (age) => {
+          const num = age.replace(/[^0-9]/g, '');
+          return `${num} жастағы балалар`;
+        },
         downloadFile: "📥 Файлды жүктеу",
         noMaterials: "Бұл талаптар бойынша әлі материалдар жоқ.",
         loading: "Материалдар жүктелуде...",
@@ -222,7 +225,10 @@
         catFeedback: "💬 Обратная связь",
         clearAge: "Сбросить фильтр (Показать все)",
         activeAgePrefix: "Активен фильтр:",
-        forChildren: "для детей",
+        formatAgeBadge: (age) => {
+          const num = age.replace(/[^0-9]/g, '');
+          return `Дети ${num} лет`;
+        },
         downloadFile: "📥 Скачать файл",
         noMaterials: "В этом разделе пока нет материалов.",
         loading: "Загрузка материалов...",
@@ -241,7 +247,6 @@
       currentLang = lang;
       const t = translations[lang];
 
-      // Переключение кнопок языка
       const kkBtn = document.getElementById('lang-kk-btn');
       const ruBtn = document.getElementById('lang-ru-btn');
       if (lang === 'kk') {
@@ -252,7 +257,6 @@
         kkBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300";
       }
 
-      // Обновление текстов в интерфейсе
       document.getElementById('header-subtitle').innerText = t.subtitle;
       document.getElementById('header-desc').innerText = t.desc;
       document.getElementById('age-filter-title').innerText = t.ageFilterTitle;
@@ -279,6 +283,10 @@
       document.getElementById('lbl-msg').innerText = t.lblMsg;
       document.getElementById('submit-btn').innerText = t.submitBtn;
       document.getElementById('fb-list-title').innerText = t.fbListTitle;
+
+      if (selectedAge) {
+        document.getElementById('active-age-text').innerText = `${t.activeAgePrefix} ${t.formatAgeBadge(selectedAge)}`;
+      }
 
       renderMaterials();
       renderComments();
@@ -345,7 +353,7 @@
       const badgeText = document.getElementById('active-age-text');
       const t = translations[currentLang];
       
-      badgeText.innerText = `${t.activeAgePrefix} ${age} ${t.forChildren}`;
+      badgeText.innerText = `${t.activeAgePrefix} ${t.formatAgeBadge(age)}`;
       badge.classList.remove('hidden');
 
       if (currentCategory === 'Кері байланыс') {
@@ -385,7 +393,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2 mb-3">
               <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">${item.category || 'Материал'}</span>
-              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${item.age}${t.forChildren}</span>` : ''}
+              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${t.formatAgeBadge(item.age)}</span>` : ''}
               ${item.pedagog_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg">${item.pedagog_subcategory}</span>` : ''}
               ${item.educator_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-purple-100 text-purple-800 rounded-lg">${item.educator_subcategory}</span>` : ''}
             </div>
