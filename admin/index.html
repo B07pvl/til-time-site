@@ -4,10 +4,65 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Басқару панелі | Тіл-Time</title>
-  <!-- Включаем Sveltia CMS с опцией авторизации по токену -->
-  <meta name="sveltia-cms-config" content='{"backend":{"name":"github","repo":"B07pvl/til-time-site","branch":"main"}}' />
 </head>
 <body>
+  <!-- Подключаем Sveltia CMS -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+  
+  <script>
+    // Принудительно задаем настройки бэкенда для GitHub, чтобы избежать Netlify Auth
+    window.CMS_MANUAL_INIT = true;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      CMS.init({
+        config: {
+          backend: {
+            name: 'github',
+            repo: 'B07pvl/til-time-site',
+            branch: 'main',
+            auth_type: 'implicit'
+          },
+          media_folder: 'uploads',
+          public_folder: '/uploads',
+          collections: [
+            {
+              name: 'materials',
+              label: 'Оқу материалдары',
+              folder: 'content/materials',
+              create: true,
+              slug: '{{slug}}',
+              fields: [
+                { label: 'Тақырыбы / Название', name: 'title', widget: 'string' },
+                {
+                  label: 'Бөлім / Раздел',
+                  name: 'category',
+                  widget: 'select',
+                  options: [
+                    'Жаңа сөздер',
+                    'Аудио және бейне',
+                    '«Тілашар» үйірмесі',
+                    'Ата-аналарға кеңес',
+                    'Кері байланыс',
+                    'Педагогикалық Тәжірибием',
+                    '«Адал азамат» біртұтас тәрбие'
+                  ]
+                },
+                {
+                  label: 'Жас мөлшері (тек 3-5 жас бөлімі үшін) / Возраст',
+                  name: 'age',
+                  widget: 'select',
+                  required: false,
+                  options: ['3 жас', '4 жас', '5 жас']
+                },
+                { label: 'Мазмұны / Описание или ссылка', name: 'body', widget: 'markdown', required: false },
+                { label: 'Файл (PDF немесе Word)', name: 'file', widget: 'file', required: false },
+                { label: 'Күні / Дата', name: 'date', widget: 'datetime' }
+              ]
+            }
+          ]
+        }
+      });
+    });
+  </script>
 </body>
 </html>
