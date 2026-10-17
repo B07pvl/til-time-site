@@ -2,8 +2,7 @@ backend:
   name: github
   repo: B07pvl/til-time-site
   branch: main
-  # Указываем прямой провайдер авторизации GitHub
-  api_root: https://api.github.com
+  auth_type: token  # <--- КЛЮЧЕВАЯ СТРОКА: включает прямой ввод токена вместо редиректа на Netlify
 
 media_folder: "uploads"
 public_folder: "/uploads"
