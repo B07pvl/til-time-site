@@ -9,7 +9,7 @@
   <style>
     /* Место для фонового фото с центровкой кадра на воспитателе */
     .hero-banner {
-      background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpeg');
+      background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpg');
       background-size: cover;
       background-position: center 45%;
       background-repeat: no-repeat;
@@ -19,16 +19,27 @@
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
 
   <!-- Шапка сайта -->
-  <header class="hero-banner text-white py-12 px-4 shadow-xl border-b border-amber-500/30">
+  <header class="hero-banner text-white py-12 px-4 shadow-xl border-b border-amber-500/30 relative">
+    
+    <!-- Переключатель языков (KZ / RU) -->
+    <div class="absolute top-4 right-4 flex items-center bg-slate-900/80 backdrop-blur-md rounded-full p-1 border border-white/20 shadow-lg">
+      <button id="lang-kk-btn" onclick="setLanguage('kk')" class="px-3 py-1 text-xs font-bold rounded-full transition bg-amber-500 text-slate-950">
+        ҚАЗ
+      </button>
+      <button id="lang-ru-btn" onclick="setLanguage('ru')" class="px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300">
+        РУС
+      </button>
+    </div>
+
     <div class="max-w-6xl mx-auto text-center">
-      <p class="text-xs md:text-sm font-semibold text-amber-300 tracking-widest uppercase mb-2">
+      <p id="header-subtitle" class="text-xs md:text-sm font-semibold text-amber-300 tracking-widest uppercase mb-2">
         «Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК
       </p>
       <h1 class="text-2xl md:text-4xl font-extrabold mb-3 tracking-tight drop-shadow-md">
-        Макульбекова Гульжайнат Аманжоловқызы
+        Макульбекова Гульжайнат Аманжоловна
       </h1>
-      <p class="text-xs md:text-base opacity-90 max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10">
-        Қазақ тілі педагогінің электронды әдістемелік ұсынымдары
+      <p id="header-desc" class="text-xs md:text-base opacity-90 max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10">
+        Қазақ тілі педагогінің электронды әдістемелік қоржыны
       </p>
     </div>
   </header>
@@ -41,54 +52,56 @@
 
       <!-- Фильтры по возрасту для родителей -->
       <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">👨‍👩‍👧 Ата-аналарға (Бала жасы бойынша):</h3>
+        <h3 id="age-filter-title" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+          👨‍👩‍👧 Ата-аналарға (Бала жасы бойынша):
+        </h3>
         <div class="flex flex-col gap-1.5">
           <button onclick="filterAge('3 жас')" class="age-btn w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition">
-            👶 3 жастағы балаларға
+            👶 <span id="age-3-text">3 жастағы балалар</span>
           </button>
           <button onclick="filterAge('4 жас')" class="age-btn w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition">
-            👦 4 жастағы балаларға
+            👦 <span id="age-4-text">4 жастағы балалар</span>
           </button>
           <button onclick="filterAge('5 жас')" class="age-btn w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-800 transition">
-            👧 5 жастағы балаларға
+            👧 <span id="age-5-text">5 жастағы балалар</span>
           </button>
         </div>
       </div>
 
       <!-- Главные категории -->
       <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">Категориялар</h3>
+        <h3 id="categories-title" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+          Категориялар
+        </h3>
         <nav id="category-menu" class="space-y-1">
-          <button onclick="filterCategory('all')" class="cat-btn active w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition flex items-center justify-between bg-emerald-50 text-emerald-700">
+          <button onclick="filterCategory('all')" id="cat-all" class="cat-btn active w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition flex items-center justify-between bg-emerald-50 text-emerald-700">
             <span>Барлығы</span>
           </button>
-          <button onclick="filterCategory('Жаңа сөздер')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Жаңа сөздер')" id="cat-words" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Жаңа сөздер</span>
           </button>
-          <button onclick="filterCategory('Аудио және бейне')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Аудио және бейне')" id="cat-media" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Аудио және бейне</span>
           </button>
-          <button onclick="filterCategory('«Тілашар» үйірмесі')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('«Тілашар» үйірмесі')" id="cat-tilashar" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>«Тілашар» үйірмесі</span>
           </button>
-          <button onclick="filterCategory('Ата-аналарға кеңес')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Ата-аналарға кеңес')" id="cat-parents" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Ата-аналарға кеңес</span>
           </button>
-          <button onclick="filterCategory('Педагогикалық Тәжірибием')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Педагогикалық Тәжірибием')" id="cat-experience" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Педагогикалық Тәжірибием</span>
           </button>
-          <button onclick="filterCategory('«Адал азамат» біртұтас тәрбие')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('«Адал азамат» біртұтас тәрбие')" id="cat-adal" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>«Адал азамат» тәрбие</span>
           </button>
-          
-          <button onclick="filterCategory('Педагогтерге әдістемелік көмек')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Педагогтерге әдістемелік көмек')" id="cat-pedagog" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Педагогтерге көмек</span>
           </button>
-          <button onclick="filterCategory('Тәрбиешілерге')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Тәрбиешілерге')" id="cat-educator" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Тәрбиешілерге</span>
           </button>
-
-          <button onclick="filterCategory('Кері байланыс')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+          <button onclick="filterCategory('Кері байланыс')" id="cat-feedback" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>💬 Кері байланыс</span>
           </button>
         </nav>
@@ -101,27 +114,29 @@
       <!-- Индикатор активного фильтра возраста -->
       <div id="active-age-badge" class="hidden mb-4 p-3 bg-amber-100/70 border border-amber-300 rounded-2xl flex items-center justify-between text-xs text-amber-900">
         <span id="active-age-text" class="font-bold"></span>
-        <button onclick="clearAgeFilter()" class="text-amber-800 underline font-semibold">Сүзгіні тазалау (Барлығын көрсету)</button>
+        <button onclick="clearAgeFilter()" id="clear-age-btn" class="text-amber-800 underline font-semibold">
+          Сүзгіні тазалау (Барлығын көрсету)
+        </button>
       </div>
 
       <!-- Блок материалов -->
       <div id="materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="col-span-full text-center py-12 text-slate-400">Материалдар жүктелуде...</div>
+        <div id="loading-text" class="col-span-full text-center py-12 text-slate-400">Материалдар жүктелуде...</div>
       </div>
 
       <!-- Отдельный блок Кері байланыс -->
       <div id="feedback-section" class="hidden space-y-8">
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-          <h3 class="text-lg font-bold text-slate-800 mb-2">💬 Сұрақ немесе пікір қалдыру</h3>
-          <p class="text-xs text-slate-500 mb-4">Тіркелусіз тез арада пікіріңізді немесе сұрағыңызды жазып қалдыра аласыз.</p>
+          <h3 id="fb-form-title" class="text-lg font-bold text-slate-800 mb-2">💬 Сұрақ немесе пікір қалдыру</h3>
+          <p id="fb-form-desc" class="text-xs text-slate-500 mb-4">Тіркелусіз тез арада пікіріңізді немесе сұрағыңызды жазып қалдыра аласыз.</p>
           
           <form id="comment-form" onsubmit="submitComment(event)" class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Сіздің атыңыз / Ваше имя *</label>
+              <label id="lbl-name" class="block text-xs font-semibold text-slate-600 mb-1">Сіздің атыңыз / Ваше имя *</label>
               <input type="text" id="comment-name" required placeholder="Мұғалім немесе Ата-ана" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Пікіріңіз немесе сұрағыңыз / Сообщение *</label>
+              <label id="lbl-msg" class="block text-xs font-semibold text-slate-600 mb-1">Пікіріңіз немесе сұрағыңыз / Сообщение *</label>
               <textarea id="comment-text" required rows="3" placeholder="Мәтінді осында жазыңыз..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
             </div>
             <button type="submit" id="submit-btn" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition">
@@ -132,9 +147,9 @@
         </div>
 
         <div class="space-y-4">
-          <h4 class="text-md font-bold text-slate-800">Пікірлер мен сұрақтар</h4>
+          <h4 id="fb-list-title" class="text-md font-bold text-slate-800">Пікірлер мен сұрақтар</h4>
           <div id="comments-list" class="space-y-4">
-            <div class="text-center py-6 text-slate-400 text-sm">Пікірлер жүктелуде...</div>
+            <div id="comments-loading" class="text-center py-6 text-slate-400 text-sm">Пікірлер жүктелуде...</div>
           </div>
         </div>
       </div>
@@ -143,7 +158,7 @@
   </main>
 
   <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-    © Тіл-Time | Павлодар №42 МДГ
+    © Тіл-Time | Павлодар Дошкольная Гимназия
   </footer>
 
   <script>
@@ -151,6 +166,123 @@
     let allFeedback = [];
     let currentCategory = 'all';
     let selectedAge = null;
+    let currentLang = 'kk';
+
+    const translations = {
+      kk: {
+        subtitle: "«Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК",
+        desc: "Қазақ тілі педагогінің электронды әдістемелік қоржыны",
+        ageFilterTitle: "👨‍👩‍👧 Ата-аналарға (Бала жасы бойынша):",
+        age3: "3 жастағы балалар",
+        age4: "4 жастағы балалар",
+        age5: "5 жастағы балалар",
+        categoriesTitle: "Категориялар",
+        catAll: "Барлығы",
+        catWords: "Жаңа сөздер",
+        catMedia: "Аудио және бейне",
+        catTilashar: "«Тілашар» үйірмесі",
+        catParents: "Ата-аналарға кеңес",
+        catExperience: "Педагогикалық Тәжірибием",
+        catAdal: "«Адал азамат» тәрбие",
+        catPedagog: "Педагогтерге көмек",
+        catEducator: "Тәрбиешілерге",
+        catFeedback: "💬 Кері байланыс",
+        clearAge: "Сүзгіні тазалау (Барлығын көрсету)",
+        activeAgePrefix: "Сүзгі белсенді:",
+        forChildren: "балаларға",
+        downloadFile: "📥 Файлды жүктеу",
+        noMaterials: "Бұл талаптар бойынша әлі материалдар жоқ.",
+        loading: "Материалдар жүктелуде...",
+        fbTitle: "💬 Сұрақ немесе пікір қалдыру",
+        fbDesc: "Тіркелусіз тез арада пікіріңізді немесе сұрағыңызды жазып қалдыра аласыз.",
+        lblName: "Сіздің атыңыз / Ваше имя *",
+        lblMsg: "Пікіріңіз немесе сұрағыңыз / Сообщение *",
+        submitBtn: "Жіберу / Отправить",
+        fbListTitle: "Пікірлер мен сұрақтар",
+        noComments: "Әлі ешкім пікір қалдырмады. Алғашқы болып жазыңыз!",
+        teacherReply: "👩‍🏫 Педагогтің жауабы:"
+      },
+      ru: {
+        subtitle: "КГКП «Дошкольная гимназия №42 города Павлодара»",
+        desc: "Электронная методическая копилка педагога казахского языка",
+        ageFilterTitle: "👨‍👩‍👧 Родителям (По возрасту ребенка):",
+        age3: "Дети 3 лет",
+        age4: "Дети 4 лет",
+        age5: "Дети 5 лет",
+        categoriesTitle: "Категории",
+        catAll: "Все материалы",
+        catWords: "Новые слова",
+        catMedia: "Аудио и видео",
+        catTilashar: "Кружок «Тілашар»",
+        catParents: "Советы родителям",
+        catExperience: "Педагогический опыт",
+        catAdal: "Воспитание «Адал азамат»",
+        catPedagog: "Помощь педагогам",
+        catEducator: "Воспитателям",
+        catFeedback: "💬 Обратная связь",
+        clearAge: "Сбросить фильтр (Показать все)",
+        activeAgePrefix: "Активен фильтр:",
+        forChildren: "для детей",
+        downloadFile: "📥 Скачать файл",
+        noMaterials: "В этом разделе пока нет материалов.",
+        loading: "Загрузка материалов...",
+        fbTitle: "💬 Оставить вопрос или отзыв",
+        fbDesc: "Вы можете быстро оставить сообщение без регистрации.",
+        lblName: "Ваше имя *",
+        lblMsg: "Ваш отзыв или вопрос *",
+        submitBtn: "Отправить",
+        fbListTitle: "Отзывы и вопросы",
+        noComments: "Пока нет отзывов. Будьте первыми!",
+        teacherReply: "👩‍🏫 Ответ педагога:"
+      }
+    };
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+
+      // Переключение кнопок языка
+      const kkBtn = document.getElementById('lang-kk-btn');
+      const ruBtn = document.getElementById('lang-ru-btn');
+      if (lang === 'kk') {
+        kkBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition bg-amber-500 text-slate-950";
+        ruBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300";
+      } else {
+        ruBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition bg-amber-500 text-slate-950";
+        kkBtn.className = "px-3 py-1 text-xs font-bold rounded-full transition text-white hover:text-amber-300";
+      }
+
+      // Обновление текстов в интерфейсе
+      document.getElementById('header-subtitle').innerText = t.subtitle;
+      document.getElementById('header-desc').innerText = t.desc;
+      document.getElementById('age-filter-title').innerText = t.ageFilterTitle;
+      document.getElementById('age-3-text').innerText = t.age3;
+      document.getElementById('age-4-text').innerText = t.age4;
+      document.getElementById('age-5-text').innerText = t.age5;
+      document.getElementById('categories-title').innerText = t.categoriesTitle;
+
+      document.querySelector('#cat-all span').innerText = t.catAll;
+      document.querySelector('#cat-words span').innerText = t.catWords;
+      document.querySelector('#cat-media span').innerText = t.catMedia;
+      document.querySelector('#cat-tilashar span').innerText = t.catTilashar;
+      document.querySelector('#cat-parents span').innerText = t.catParents;
+      document.querySelector('#cat-experience span').innerText = t.catExperience;
+      document.querySelector('#cat-adal span').innerText = t.catAdal;
+      document.querySelector('#cat-pedagog span').innerText = t.catPedagog;
+      document.querySelector('#cat-educator span').innerText = t.catEducator;
+      document.querySelector('#cat-feedback span').innerText = t.catFeedback;
+
+      document.getElementById('clear-age-btn').innerText = t.clearAge;
+      document.getElementById('fb-form-title').innerText = t.fbTitle;
+      document.getElementById('fb-form-desc').innerText = t.fbDesc;
+      document.getElementById('lbl-name').innerText = t.lblName;
+      document.getElementById('lbl-msg').innerText = t.lblMsg;
+      document.getElementById('submit-btn').innerText = t.submitBtn;
+      document.getElementById('fb-list-title').innerText = t.fbListTitle;
+
+      renderMaterials();
+      renderComments();
+    }
 
     async function loadContent() {
       try {
@@ -175,7 +307,7 @@
         renderMaterials();
         renderComments();
       } catch (err) {
-        document.getElementById('materials-list').innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Материалдарды жүктеу кезінде қате шықты.</div>`;
+        document.getElementById('materials-list').innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">${translations[currentLang].noMaterials}</div>`;
       }
     }
 
@@ -211,8 +343,9 @@
       selectedAge = age;
       const badge = document.getElementById('active-age-badge');
       const badgeText = document.getElementById('active-age-text');
+      const t = translations[currentLang];
       
-      badgeText.innerText = `Сүзгі белсенді: ${age} балаларға арналған материалдар`;
+      badgeText.innerText = `${t.activeAgePrefix} ${age} ${t.forChildren}`;
       badge.classList.remove('hidden');
 
       if (currentCategory === 'Кері байланыс') {
@@ -230,22 +363,20 @@
 
     function renderMaterials() {
       const list = document.getElementById('materials-list');
+      const t = translations[currentLang];
       
-      // Автоматически скрываем материалы, у которых в админке включен переключатель "is_private"
       let filtered = allMaterials.filter(m => m.is_private !== 'true' && m.is_private !== true);
 
-      // Фильтр по категории
       if (currentCategory !== 'all') {
         filtered = filtered.filter(m => m.category === currentCategory);
       }
 
-      // Фильтр по возрасту
       if (selectedAge) {
         filtered = filtered.filter(m => m.age === selectedAge);
       }
 
       if (filtered.length === 0) {
-        list.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Бұл талаптар бойынша әлі материалдар жоқ.</div>`;
+        list.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">${t.noMaterials}</div>`;
         return;
       }
 
@@ -254,7 +385,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2 mb-3">
               <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">${item.category || 'Материал'}</span>
-              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${item.age} балаларға</span>` : ''}
+              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${item.age}${t.forChildren}</span>` : ''}
               ${item.pedagog_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg">${item.pedagog_subcategory}</span>` : ''}
               ${item.educator_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-purple-100 text-purple-800 rounded-lg">${item.educator_subcategory}</span>` : ''}
             </div>
@@ -263,7 +394,7 @@
           </div>
           ${item.file ? `
             <a href="${item.file}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition">
-              <span>📥 Файлды жүктеу</span>
+              <span>${t.downloadFile}</span>
             </a>
           ` : ''}
         </article>
@@ -272,8 +403,10 @@
 
     function renderComments() {
       const list = document.getElementById('comments-list');
+      const t = translations[currentLang];
+
       if (allFeedback.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">Әлі ешкім пікір қалдырмады. Алғашқы болып жазыңыз!</div>`;
+        list.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">${t.noComments}</div>`;
         return;
       }
 
@@ -287,8 +420,7 @@
 
           ${fb.reply ? `
             <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-100 text-xs text-slate-700 mt-2">
-              <span class="font-bold text-emerald-800 block mb-1">👩‍🏫 Педагогтің жауабы:</span>
-              ${marked.parse(fb.reply)}
+              <span class="font-bold text-emerald-800 block mb-1">${t.teacherReply}</span>${marked.parse(fb.reply)}
             </div>
           ` : ''}
         </div>
@@ -302,7 +434,7 @@
       const text = document.getElementById('comment-text').value;
 
       status.className = 'text-xs font-medium py-2 text-emerald-600';
-      status.innerText = 'Пікіріңіз жіберілуде...';
+      status.innerText = 'Жіберілуде...';
       status.classList.remove('hidden');
 
       allFeedback.unshift({
@@ -314,7 +446,7 @@
 
       document.getElementById('comment-name').value = '';
       document.getElementById('comment-text').value = '';
-      status.innerText = 'Рахмет! Пікіріңіз сәтті жіберілді.';
+      status.innerText = 'Сәтті жіберілді!';
     }
 
     loadContent();
