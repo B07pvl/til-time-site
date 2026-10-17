@@ -2,8 +2,8 @@ backend:
   name: github
   repo: B07pvl/til-time-site
   branch: main
-  base_url: https://decap-bridge.com  # <--- ВАЖНО: готовый бесплатный OAuth прокси
-  auth_endpoint: /api/v1/authorize
+  base_url: https://til-time-site.baklagun000.workers.dev # Ваш адрес сайта на Cloudflare
+  auth_endpoint: /api/auth # (или стандартный метод авторизации)
 
 media_folder: "uploads"
 public_folder: "/uploads"
