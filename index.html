@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тіл-Time | Электронды әдістемелік ұсынымдары</title>
+  <title>Тіл-Time | Электронды әдістемелік қоржын</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Место для фонового фото с расширением .jpeg и центровкой кадра на воспитателе */
+    /* Место для фонового фото с центровкой кадра на воспитателе */
     .hero-banner {
       background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpeg');
       background-size: cover;
@@ -36,10 +36,10 @@
         «Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК
       </p>
       <h1 class="text-2xl md:text-4xl font-extrabold mb-3 tracking-tight drop-shadow-md">
-        Макульбекова Гульжайнат Аманжолқызы
+        Макульбекова Гульжайнат Аманжоловна
       </h1>
       <p id="header-desc" class="text-xs md:text-base opacity-90 max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10">
-        Қазақ тілі педагогінің электронды әдістемелік ұсынымдары
+        Қазақ тілі педагогінің электронды әдістемелік қоржыны
       </p>
     </div>
   </header>
@@ -77,11 +77,11 @@
           <button onclick="filterCategory('all')" id="cat-all" class="cat-btn active w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition flex items-center justify-between bg-emerald-50 text-emerald-700">
             <span>Барлығы</span>
           </button>
-          <button onclick="filterCategory('Жаңа сөздер')" id="cat-words" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Жаңа сөздер</span>
+          <button onclick="filterCategory('Қазақ тілі «Тілге бойлау»')" id="cat-words" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Қазақ тілі «Тілге бойлау»</span>
           </button>
-          <button onclick="filterCategory('Аудио және бейне')" id="cat-media" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Аудио және бейне</span>
+          <button onclick="filterCategory('Аудио және бейнежазбалар')" id="cat-media" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Аудио және бейнежазбалар</span>
           </button>
           <button onclick="filterCategory('«Тілашар» үйірмесі')" id="cat-tilashar" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>«Тілашар» үйірмесі</span>
@@ -89,17 +89,17 @@
           <button onclick="filterCategory('Ата-аналарға кеңес')" id="cat-parents" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>Ата-аналарға кеңес</span>
           </button>
-          <button onclick="filterCategory('Педагогикалық Тәжірибием')" id="cat-experience" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Педагогикалық Тәжірибием</span>
+          <button onclick="filterCategory('Педагогикалық тәжірибем')" id="cat-experience" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Педагогикалық тәжірибем</span>
           </button>
           <button onclick="filterCategory('«Адал азамат» біртұтас тәрбие')" id="cat-adal" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>«Адал азамат» тәрбие</span>
+            <span>«Адал азамат» біртұтас тәрбие</span>
           </button>
-          <button onclick="filterCategory('Педагогтерге әдістемелік көмек')" id="cat-pedagog" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Педагогтерге көмек</span>
+          <button onclick="filterCategory('Қазақ тілі педагогтеріне әдістемелік көмек')" id="cat-pedagog" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Қазақ тілі педагогтеріне әдістемелік көмек</span>
           </button>
-          <button onclick="filterCategory('Тәрбиешілерге')" id="cat-educator" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <span>Тәрбиешілерге</span>
+          <button onclick="filterCategory('Тәрбиешілерге әдістемелік көмек')" id="cat-educator" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Тәрбиешілерге әдістемелік көмек</span>
           </button>
           <button onclick="filterCategory('Кері байланыс')" id="cat-feedback" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
             <span>💬 Кері байланыс</span>
@@ -171,21 +171,21 @@
     const translations = {
       kk: {
         subtitle: "«Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК",
-        desc: "Қазақ тілі педагогінің электронды әдістемелік ұсынымдары",
+        desc: "Қазақ тілі педагогінің электронды әдістемелік қоржыны",
         ageFilterTitle: "👨‍👩‍👧 Ата-аналарға (Бала жасы бойынша):",
         age3: "3 жастағы балалар",
         age4: "4 жастағы балалар",
         age5: "5 жастағы балалар",
         categoriesTitle: "Категориялар",
         catAll: "Барлығы",
-        catWords: "Қазақ тілі 'Тілге бойлау'",
-        catMedia: "Аудио және бейне жазбалар",
+        catWords: "Қазақ тілі «Тілге бойлау»",
+        catMedia: "Аудио және бейнежазбалар",
         catTilashar: "«Тілашар» үйірмесі",
         catParents: "Ата-аналарға кеңес",
-        catExperience: "Педагогикалық Тәжірибием",
+        catExperience: "Педагогикалық тәжірибем",
         catAdal: "«Адал азамат» біртұтас тәрбие",
-        catPedagog: "Педагогтерге көмек",
-        catEducator: "Тәрбиешілерге",
+        catPedagog: "Қазақ тілі педагогтеріне әдістемелік көмек",
+        catEducator: "Тәрбиешілерге әдістемелік көмек",
         catFeedback: "💬 Кері байланыс",
         clearAge: "Сүзгіні тазалау (Барлығын көрсету)",
         activeAgePrefix: "Сүзгі белсенді:",
@@ -207,21 +207,21 @@
       },
       ru: {
         subtitle: "КГКП «Дошкольная гимназия №42 города Павлодара»",
-        desc: "Электронные методические предложения педагога казахского языка",
+        desc: "Электронная методическая копилка педагога казахского языка",
         ageFilterTitle: "👨‍👩‍👧 Родителям (По возрасту ребенка):",
         age3: "Дети 3 лет",
         age4: "Дети 4 лет",
         age5: "Дети 5 лет",
         categoriesTitle: "Категории",
         catAll: "Все материалы",
-        catWords: "Казахский язык 'Тілге бойлау'",
-        catMedia: "Аудио и видео",
-        catTilashar: "Кружок «тілашар»",
+        catWords: "Казахский язык «Тілге бойлау»",
+        catMedia: "Аудио и видеозаписи",
+        catTilashar: "Кружок «Тілашар»",
         catParents: "Советы родителям",
         catExperience: "Педагогический опыт",
-        catAdal: "Воспитание и «Адал азамат»",
-        catPedagog: "Помощь педагогам",
-        catEducator: "Воспитателям",
+        catAdal: "Единое воспитание «Адал азамат»",
+        catPedagog: "Методическая помощь педагогам казахского языка",
+        catEducator: "Методическая помощь воспитателям",
         catFeedback: "💬 Обратная связь",
         clearAge: "Сбросить фильтр (Показать все)",
         activeAgePrefix: "Активен фильтр:",
