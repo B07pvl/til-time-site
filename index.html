@@ -3,53 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тіл-Time | Павлодар №42 мектепке дейінгі гимназиясы</title>
+  <title>Тіл-Time | Электронды портфолио</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Настройка фонового изображения портфолио с кадрированием по центру на воспитателе */
+    /* Место под фоновое фото с центровкой на воспитателе */
     .hero-banner {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.6)), url('/uploads/portfolio-bg.jpg');
+      background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), url('/uploads/portfolio-bg.jpg');
       background-size: cover;
-      background-position: center 45%; /* Смещение фокуса на воспитателя */
+      background-position: center 45%; /* Фокус на воспитателя */
       background-repeat: no-repeat;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
 
   <!-- Шапка сайта -->
-  <header class="hero-banner text-white py-16 px-4 text-center shadow-lg transition-all">
-    <div class="max-w-4xl mx-auto">
-      <p class="text-sm md:text-base font-medium text-amber-300 tracking-wider uppercase mb-2">
+  <header class="hero-banner text-white py-12 px-4 shadow-xl border-b border-amber-500/30">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="text-xs md:text-sm font-semibold text-amber-300 tracking-widest uppercase mb-2">
         «Павлодар қаласының №42 мектепке дейінгі гимназиясы» ҚМҚК
       </p>
-      <h1 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-md">
+      <h1 class="text-3xl md:text-5xl font-extrabold mb-2 tracking-tight drop-shadow-md">
         Портфолио
       </h1>
-      <h2 class="text-xl md:text-2xl font-semibold text-emerald-200 mb-4">
+      <h2 class="text-lg md:text-2xl font-medium text-emerald-200 mb-4">
         Макульбекова Гульжайнат Аманжоловна
       </h2>
-      <p class="text-sm md:text-base max-w-2xl mx-auto opacity-90">
-        Қазақ тілі педагогінің электронды әдістемелік кеңістігі
+      <p class="text-xs md:text-base opacity-90 max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10">
+        Қазақ тілі педагогінің электронды әдістемелік пространствасы
       </p>
     </div>
   </header>
 
-  <!-- Основной контент сайта -->
-  <main class="max-w-6xl mx-auto px-4 py-8">
-    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 mb-8">
-      <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <span>📚</span> Материалдар бөлімі
-      </h3>
-      <p class="text-slate-600">
-        Сайтқа қош келдіңіз! Жоғарыдағы админ-панель арқылы қосылған барлық жаңа әдістемелік құралдар, ойындар мен сабақ жоспарлары осы бөлімде көрсегіледі.
-      </p>
-    </div>
+  <!-- Основной блок -->
+  <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- Навигация по категориям (Сайдбар) -->
+    <aside class="lg:col-span-1 space-y-2">
+      <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 sticky top-4">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">Категориялар</h3>
+        <nav id="category-menu" class="space-y-1">
+          <button onclick="filterCategory('all')" class="cat-btn active w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition flex items-center justify-between bg-emerald-50 text-emerald-700">
+            <span>Барлығы</span>
+          </button>
+          <button onclick="filterCategory('Жаңа сөздер')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Жаңа сөздер</span>
+          </button>
+          <button onclick="filterCategory('Аудио және бейне')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Аудио және бейне</span>
+          </button>
+          <button onclick="filterCategory('«Тілашар» үйірмесі')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>«Тілашар» үйірмесі</span>
+          </button>
+          <button onclick="filterCategory('Ата-аналарға кеңес')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Ата-аналарға кеңес</span>
+          </button>
+          <button onclick="filterCategory('Педагогикалық Тәжірибием')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Педагогикалық Тәжірибием</span>
+          </button>
+          <button onclick="filterCategory('«Адал азамат» біртұтас тәрбие')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>«Адал азамат» тәрбие</span>
+          </button>
+          
+          <!-- НОВЫЕ КАТЕГОРИИ -->
+          <button onclick="filterCategory('Педагогтерге әдістемелік көмек')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Педагогтерге көмек</span>
+          </button>
+          <button onclick="filterCategory('Тәрбиешілерге')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>Тәрбиешілерге</span>
+          </button>
+          <button onclick="filterCategory('Кері байланыс')" class="cat-btn w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <span>💬 Кері байланыс</span>
+          </button>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Список карточек материалов -->
+    <section class="lg:col-span-3">
+      <!-- Подкатегории / Фильтры по возрасту -->
+      <div id="subcategory-bar" class="hidden mb-6 bg-white p-3 rounded-2xl border border-slate-200 flex-wrap gap-2"></div>
+
+      <div id="materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Карточки загружаются динамически -->
+        <div class="col-span-full text-center py-12 text-slate-400">Материалдар жүктелуде...</div>
+      </div>
+    </section>
   </main>
 
-  <footer class="text-center py-6 text-slate-400 text-sm border-t border-slate-200">
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
     © Тіл-Time | Павлодар №42 МДГ
   </footer>
 
+  <!-- Скрипт загрузки и отображения материалов -->
+  <script>
+    let allMaterials = [];
+    let currentCategory = 'all';
+
+    async function loadContent() {
+      try {
+        // Загрузка списков через GitHub API
+        const response = await fetch('https://api.github.com/repos/B07pvl/til-time-site/contents/content/materials');
+        if (!response.ok) throw new Error('Ошибка загрузки');
+        const files = await response.json();
+        
+        allMaterials = await Promise.all(files.map(async file => {
+          const res = await fetch(file.download_url);
+          const text = await res.text();
+          return parseMarkdown(text);
+        }));
+
+        renderMaterials();
+      } catch (err) {
+        document.getElementById('materials-list').innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Материалдар әлі қосылмаған немесе жүктеу қатесі.</div>`;
+      }
+    }
+
+    function parseMarkdown(text) {
+      const frontMatterMatch = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!frontMatterMatch) return { body: text };
+      
+      const yaml = frontMatterMatch[1];
+      const body = frontMatterMatch[2];
+      const meta = {};
+      
+      yaml.split('\n').forEach(line => {
+        const [key, ...value] = line.split(':');
+        if (key && value) meta[key.trim()] = value.join(':').trim().replace(/^['"]|['"]$/g, '');
+      });
+      
+      return { ...meta, body };
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('bg-emerald-50', 'text-emerald-700'));
+      renderMaterials();
+    }
+
+    function renderMaterials() {
+      const list = document.getElementById('materials-list');
+      const filtered = currentCategory === 'all' 
+        ? allMaterials 
+        : allMaterials.filter(m => m.category === currentCategory);
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Бұл бөлімде әлі материалдар жоқ.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(item => `
+        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">${item.category || 'Материал'}</span>
+              ${item.age ? `<span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg">${item.age}</span>` : ''}
+              ${item.pedagog_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg">${item.pedagog_subcategory}</span>` : ''}
+              ${item.educator_subcategory ? `<span class="text-xs font-semibold px-2.5 py-1 bg-purple-100 text-purple-800 rounded-lg">${item.educator_subcategory}</span>` : ''}
+            </div>
+            <h4 class="text-lg font-bold text-slate-800 mb-2">${item.title || 'Тақырыпсыз'}</h4>
+            <div class="text-sm text-slate-600 mb-4 line-clamp-3">${marked.parse(item.body || '')}</div>
+          </div>
+          ${item.file ? `
+            <a href="${item.file}" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition">
+              <span>📥 Файлды жүктеу</span>
+            </a>
+          ` : ''}
+        </article>
+      `).join('');
+    }
+
+    loadContent();
+  </script>
 </body>
 </html>
