@@ -44,8 +44,7 @@
                     'Педагогикалық Тәжірибием',
                     '«Адал азамат» біртұтас тәрбие',
                     'Педагогтерге әдістемелік көмек',
-                    'Тәрбиешілерге',
-                    'Кері байланыс'
+                    'Тәрбиешілерге'
                   ]
                 },
                 {
@@ -87,6 +86,13 @@
                   widget: 'select',
                   required: false,
                   options: ['3 жас', '4 жас', '5 жас']
+                },
+                {
+                  label: '🔒 Шектеулі доступ (Тек педагогтерге арналған)',
+                  name: 'is_private',
+                  widget: 'boolean',
+                  default: false,
+                  required: false
                 },
                 { label: 'Мазмұны / Описание', name: 'body', widget: 'markdown', required: false },
                 { label: 'Файл (PDF, Word)', name: 'file', widget: 'file', required: false },
