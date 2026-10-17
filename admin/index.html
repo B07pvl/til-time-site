@@ -6,7 +6,6 @@
   <title>Басқару панелі | Тіл-Time</title>
 </head>
 <body>
-  <!-- Подключаем Sveltia CMS -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
   
   <script>
@@ -15,6 +14,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       CMS.init({
         config: {
+          load_config_file: false, // <--- ОТКЛЮЧАЕМ ПОИСК ВНЕШНЕГО config.yml
           backend: {
             name: 'github',
             repo: 'B07pvl/til-time-site',
