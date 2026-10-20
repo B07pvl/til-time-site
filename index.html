@@ -332,8 +332,41 @@
       return { ...meta, body };
     }
 
+    const PEDAGOG_CATEGORY = 'Қазақ тілі педагогтеріне әдістемелік көмек';
+    const EDUCATOR_CATEGORY = 'Тәрбиешілерге әдістемелік көмек';
+    const CATEGORY_ALIASES = {
+      'Жаңа сөздер': 'Қазақ тілі*** «Тілге бойлау»',
+      'Аудио және бейне': 'Аудио және бейнежазбалар',
+      'Педагогикалық Тәжірибием': 'Педагогикалық тәжірибем',
+      'Педагогтерге әдістемелік көмек': PEDAGOG_CATEGORY,
+      'Тәрбиешілерге': EDUCATOR_CATEGORY
+    };
+
+    function normalizeCategory(value) {
+      const category = typeof value === 'string' ? value.trim() : '';
+      return Object.prototype.hasOwnProperty.call(CATEGORY_ALIASES, category)
+        ? CATEGORY_ALIASES[category] : category;
+    }
+
+    function belongsToCategory(material, category) {
+      if (normalizeCategory(material.category) === category) return true;
+      const subcategory = category === PEDAGOG_CATEGORY
+        ? material.pedagog_subcategory
+        : category === EDUCATOR_CATEGORY ? material.educator_subcategory : '';
+      return typeof subcategory === 'string' && subcategory.trim() !== '';
+    }
+
+    function isMethodicalCategory(category) {
+      return category === PEDAGOG_CATEGORY || category === EDUCATOR_CATEGORY;
+    }
+
     function filterCategory(cat) {
-      currentCategory = cat;
+      currentCategory = normalizeCategory(cat);
+      // Возрастной фильтр для родителей не скрывает методические материалы.
+      if (isMethodicalCategory(currentCategory)) {
+        selectedAge = null;
+        document.getElementById('active-age-badge').classList.add('hidden');
+      }
       const materialsList = document.getElementById('materials-list');
       const feedbackSection = document.getElementById('feedback-section');
 
@@ -356,7 +389,7 @@
       badgeText.innerText = `${t.activeAgePrefix} ${t.formatAgeBadge(age)}`;
       badge.classList.remove('hidden');
 
-      if (currentCategory === 'Кері байланыс') {
+      if (currentCategory === 'Кері байланыс' || isMethodicalCategory(currentCategory)) {
         filterCategory('all');
       } else {
         renderMaterials();
@@ -376,10 +409,10 @@
       let filtered = allMaterials.filter(m => m.is_private !== 'true' && m.is_private !== true);
 
       if (currentCategory !== 'all') {
-        filtered = filtered.filter(m => m.category === currentCategory);
+        filtered = filtered.filter(m => belongsToCategory(m, currentCategory));
       }
 
-      if (selectedAge) {
+      if (selectedAge && !isMethodicalCategory(currentCategory)) {
         filtered = filtered.filter(m => m.age === selectedAge);
       }
 
@@ -461,3 +494,4 @@
   </script>
 </body>
 </html>
+
