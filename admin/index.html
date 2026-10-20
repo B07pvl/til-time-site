@@ -1,127 +1,447 @@
 <!doctype html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Басқару панелі | Тіл-Time</title>
+  <style>
+.upload-manager { color: #172e35; background: #f3f6f5; min-height: 100%; padding: clamp(20px, 4vw, 48px); font: 15px/1.6 system-ui, sans-serif; box-sizing: border-box; }
+.upload-manager * { box-sizing: border-box; }
+.upload-manager h1, .upload-manager h2, .upload-manager p { margin: 0; }
+.upload-manager h1 { font-size: clamp(26px, 3vw, 36px); line-height: 1.2; margin: 8px 0 12px; }
+.upload-manager h2 { font-size: 18px; line-height: 1.45; overflow-wrap: anywhere; }
+.upload-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; max-width: 1200px; }
+.upload-header > div { max-width: 760px; }
+.upload-eyebrow { color: #477569; font-size: 11px; font-weight: 750; letter-spacing: .16em; }
+.upload-help { background: #e2eee9; border-left: 3px solid #34816b; border-radius: 8px; padding: 16px 20px; margin: 24px 0 !important; max-width: 1200px; }
+.upload-toolbar { display: flex; gap: 16px; align-items: flex-end; max-width: 1200px; margin: 28px 0 20px; }
+.upload-toolbar label { display: grid; gap: 6px; font-weight: 650; }
+.upload-toolbar label:first-child { flex: 1; }
+.upload-manager input, .upload-manager select { border: 1px solid #b8c9c1; border-radius: 8px; background: white; color: #172e35; padding: 10px 12px; min-height: 44px; width: 100%; font: inherit; }
+.upload-button { display: inline-flex; justify-content: center; align-items: center; text-align: center; min-height: 44px; padding: 10px 16px; border: 1px solid #17634f; border-radius: 8px; background: #17634f; color: white !important; text-decoration: none; font: 600 14px/1.45 system-ui, sans-serif; cursor: pointer; }
+.upload-button:hover { background: #114c3d; }
+.upload-secondary { color: #17634f !important; background: white; }
+.upload-secondary:hover { background: #e2eee9; }
+.upload-button:disabled { opacity: .65; cursor: wait; }
+.upload-manager :focus-visible { outline: 3px solid #e6b657; outline-offset: 3px; }
+.upload-count { color: #5b6d64; margin-bottom: 14px !important; }
+.upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 18px; max-width: 1200px; }
+.upload-card { background: white; border: 1px solid #d6e1db; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.upload-card-heading, .upload-entry-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: space-between; }
+.upload-card-heading { color: #617267; font-size: 12px; }
+.upload-badge { display: inline-block; padding: 3px 8px; border-radius: 5px; background: #edf4ef; color: #325f4a; font-size: 12px; font-weight: 650; }
+.upload-entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.upload-entry { border-top: 1px solid #e3ebe6; padding-top: 12px; overflow-wrap: anywhere; }
+.upload-entry p { font-size: 13px; color: #53665c; margin: 6px 0 !important; }
+.upload-link, .upload-notice a { color: #17634f; font-weight: 650; text-decoration: underline; }
+.upload-unassigned { display: grid; gap: 14px; margin-top: auto; font-size: 14px; }
+.upload-path { font-size: 12px; color: #617267; overflow-wrap: anywhere; }
+.upload-notice, .upload-missing { background: #fff5df; border: 1px solid #ead2a4; border-radius: 10px; padding: 20px; margin: 20px 0; max-width: 1200px; }
+.upload-missing > p { margin: 8px 0 18px !important; }
+.upload-empty { padding: 32px 0; }
+@media (max-width: 700px) { .upload-header, .upload-toolbar { flex-direction: column; align-items: stretch; } .upload-toolbar label { width: 100%; } .upload-card { padding: 18px; } }
+
+</style>
 </head>
 <body>
-  <!-- Подключаем Sveltia CMS -->
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
-  
+  <script>window.CMS_MANUAL_INIT = true;</script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.1/dist/js-yaml.min.js"></script>
   <script>
-    window.CMS_MANUAL_INIT = true;
-    
+/* Uploads are assets; a saved materials entry supplies their public metadata. */
+(function (global) {
+  'use strict';
+  const MATERIALS_PREFIX = 'content/materials/';
+  const UPLOADS_PREFIX = 'uploads/';
+
+  function parseEntry(text) {
+    const normalized = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+    const match = normalized.match(/^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)([\s\S]*)$/);
+    if (!match) throw new Error('В записи отсутствуют данные материала.');
+    const data = global.jsyaml.load(match[1], { schema: global.jsyaml.JSON_SCHEMA });
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Неверный формат записи.');
+    return { ...data, body: match[2] };
+  }
+
+  function normalizeFile(value) {
+    if (typeof value !== 'string') return '';
+    let result = value.trim();
+    try { result = decodeURIComponent(result); } catch (_) { /* A literal percent is a valid filename character. */ }
+    return result.replace(/^\/+/, '');
+  }
+
+  function resourceType(name) {
+    const ext = name.split('.').pop().toLowerCase();
+    if (['pdf', 'doc', 'docx', 'odt', 'txt', 'rtf', 'xls', 'xlsx', 'csv'].includes(ext)) return 'Документ';
+    if (['ppt', 'pptx', 'odp'].includes(ext)) return 'Презентация';
+    if (['mp3', 'm4a', 'wav', 'ogg', 'aac', 'flac'].includes(ext)) return 'Аудио';
+    if (['mp4', 'webm', 'mov', 'avi', 'mkv', 'm4v'].includes(ext)) return 'Видео';
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'avif'].includes(ext)) return 'Изображение';
+    return 'Другое';
+  }
+
+  function invalidAssetReason(name) {
+    if (/\.(crdownload|part|tmp)$/i.test(name)) return 'Загрузка файла не завершена. Загрузите готовый файл.';
+    if (/\.lnk$/i.test(name)) return 'Это ярлык Windows. Загрузите исходный документ или видео.';
+    return '';
+  }
+
+  function editURL(entry) {
+    const id = entry.path.slice(MATERIALS_PREFIX.length).replace(/\.md$/i, '');
+    return '#/collections/materials/entries/' + encodeURIComponent(id);
+  }
+
+  async function newURL(asset) {
+    const bytes = new TextEncoder().encode(asset.path);
+    const digest = await global.crypto.subtle.digest('SHA-256', bytes);
+    const suffix = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('').slice(0, 20);
+    const params = new URLSearchParams({
+      title: asset.name.replace(/\.[^.]+$/, ''),
+      file: '/' + asset.path,
+      resource_type: resourceType(asset.name),
+      is_private: 'false',
+      date: new Date().toISOString(),
+      _slug: 'upload-' + suffix
+    });
+    return '#/collections/materials/new?' + params.toString();
+  }
+
+  async function request(url, format, fetcher) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20000);
+    try {
+      const response = await fetcher(url, { cache: 'no-store', signal: controller.signal });
+      if (!response.ok) {
+        if (response.status === 403 || response.status === 429) {
+          throw new Error('GitHub временно ограничил загрузку списка. Попробуйте позже или выберите файл через обычную форму материала.');
+        }
+        throw new Error('Не удалось получить список или запись (HTTP ' + response.status + ').');
+      }
+      return format === 'json' ? await response.json() : await response.text();
+    } finally { clearTimeout(timer); }
+  }
+
+  async function loadResources(config, fetcher = global.fetch.bind(global)) {
+    const repo = config.backend.repo;
+    const branch = config.backend.branch;
+    const tree = await request('https://api.github.com/repos/' + repo + '/git/trees/' + encodeURIComponent(branch) + '?recursive=1', 'json', fetcher);
+    if (!Array.isArray(tree.tree) || tree.truncated) throw new Error('GitHub вернул неполный список файлов. Откройте обычную форму материала.');
+    const files = tree.tree.filter(file => file.type === 'blob');
+    const entriesResult = await Promise.allSettled(files
+      .filter(file => file.path.startsWith(MATERIALS_PREFIX) && /\.md$/i.test(file.path))
+      .map(async file => {
+        const rawURL = 'https://raw.githubusercontent.com/' + repo + '/' + encodeURIComponent(branch) + '/' + file.path.split('/').map(encodeURIComponent).join('/');
+        const data = parseEntry(await request(rawURL, 'text', fetcher));
+        return { path: file.path, data };
+      }));
+    const entries = entriesResult.filter(result => result.status === 'fulfilled').map(result => result.value);
+    const unreadCount = entriesResult.filter(result => result.status === 'rejected').length;
+    const assets = await Promise.all(files
+      .filter(file => file.path.startsWith(UPLOADS_PREFIX) && !file.path.split('/').some(part => part.startsWith('.')))
+      .map(async file => {
+        const asset = { path: file.path, name: file.path.split('/').pop(), size: file.size || 0 };
+        asset.entries = entries.filter(entry => normalizeFile(entry.data.file) === normalizeFile(asset.path));
+        asset.newURL = await newURL(asset);
+        return asset;
+      }));
+    assets.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    const assetPaths = new Set(assets.map(asset => normalizeFile(asset.path)));
+    const missing = entries.filter(entry => {
+      const file = normalizeFile(entry.data.file);
+      return file.startsWith(UPLOADS_PREFIX) && !assetPaths.has(file);
+    });
+    return { assets, missing, unreadCount };
+  }
+
+  function registerUploadsPage(CMS, config) {
+    const { createElement: h, useState, useEffect } = CMS.React;
+    const categoryOptions = config.collections.find(collection => collection.name === 'materials').fields.find(field => field.name === 'category').options;
+    const categories = categoryOptions.map(option => typeof option === 'string' ? option : option.value);
+    const categoryLabels = new Map(categoryOptions.map(option => typeof option === 'string' ? [option, option] : [option.value, option.label]));
+    const hidden = entry => entry.data.is_private === true || entry.data.is_private === 'true';
+    const isPublic = entry => !hidden(entry) && categories.includes(entry.data.category);
+
+    function ResourcePage() {
+      const [data, setData] = useState(null);
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(true);
+      const [query, setQuery] = useState('');
+      const [filter, setFilter] = useState('unassigned');
+      const [refresh, setRefresh] = useState(0);
+      useEffect(() => {
+        let active = true;
+        setLoading(true);
+        setError('');
+        loadResources(config).then(result => {
+          if (active) setData(result);
+        }).catch(err => {
+          if (active) { setData(null); setError(err.name === 'AbortError' ? 'Загрузка заняла слишком много времени. Попробуйте ещё раз.' : err.message); }
+        }).finally(() => { if (active) setLoading(false); });
+        return () => { active = false; };
+      }, [refresh]);
+
+      const assets = data ? data.assets : [];
+      const unassigned = assets.filter(asset => asset.entries.length === 0);
+      const visible = assets.filter(asset => {
+        if (filter === 'unassigned' && asset.entries.length !== 0) return false;
+        if (filter === 'assigned' && asset.entries.length === 0) return false;
+        const searchText = [asset.path, ...asset.entries.map(entry => [entry.data.title, entry.data.category, entry.data.age].join(' '))].join(' ').toLocaleLowerCase();
+        return searchText.includes(query.trim().toLocaleLowerCase());
+      });
+      const entryCard = entry => h('li', { key: entry.path, className: 'upload-entry' },
+        h('div', { className: 'upload-entry-heading' },
+          h('strong', null, String(entry.data.title || 'Без названия')),
+          h('span', { className: 'upload-badge' }, hidden(entry) ? 'Скрыт с сайта' : isPublic(entry) ? 'Опубликован' : 'Нужно выбрать категорию')),
+        h('p', null, String(categoryLabels.get(entry.data.category) || entry.data.category || 'Категория не выбрана'), ' · ', entry.data.age ? String(entry.data.age) : 'Возраст не указан'),
+        h('a', { className: 'upload-link', href: editURL(entry) }, 'Изменить категорию и возраст'));
+
+      return h('main', { className: 'upload-manager' },
+        h('header', { className: 'upload-header' },
+          h('div', null, h('p', { className: 'upload-eyebrow' }, 'ТІЛ-TIME · БИБЛИОТЕКА'), h('h1', null, 'Ресурсы из uploads'),
+            h('p', null, 'Выберите файл, назначьте ему категорию и возрастную группу, затем сохраните материал. Он появится у всех посетителей сайта.')),
+          h('a', { href: '#/collections/materials/new', className: 'upload-button' }, 'Загрузить новый материал')),
+        h('p', { className: 'upload-help' }, 'Для старых загрузок повторно загружать файл не нужно. Кнопка «Создать материал» откроет форму с уже выбранным файлом. Чтобы опубликовать его, оставьте «Скрыть материал с сайта» выключенным и нажмите «Сохранить».'),
+        h('div', { className: 'upload-toolbar' },
+          h('label', null, h('span', null, 'Найти файл'), h('input', { type: 'search', value: query, placeholder: 'Название файла или материала', onChange: event => setQuery(event.target.value) })),
+          h('label', null, h('span', null, 'Показывать'), h('select', { value: filter, onChange: event => setFilter(event.target.value) },
+            h('option', { value: 'unassigned' }, 'Без материала (' + unassigned.length + ')'),
+            h('option', { value: 'assigned' }, 'С материалом (' + (assets.length - unassigned.length) + ')'),
+            h('option', { value: 'all' }, 'Все файлы (' + assets.length + ')'))),
+          h('button', { type: 'button', className: 'upload-button upload-secondary', disabled: loading, onClick: () => setRefresh(value => value + 1) }, loading ? 'Загружаем…' : 'Обновить список')),
+        error && h('div', { role: 'alert', className: 'upload-notice' }, error, ' ', h('a', { href: '#/collections/materials/new' }, 'Открыть форму материала')),
+        data && data.unreadCount > 0 && h('div', { role: 'alert', className: 'upload-notice' }, 'Не удалось прочитать ' + data.unreadCount + ' записей. Чтобы не создавать дубликаты, сначала обновите список. Уже найденные материалы можно редактировать.'),
+        loading && h('p', { role: 'status' }, 'Загружаем файлы и связанные материалы…'),
+        !loading && data && h('p', { className: 'upload-count', role: 'status' }, 'Показано файлов: ' + visible.length),
+        !loading && data && visible.length === 0 && h('p', { className: 'upload-empty' }, 'Файлов по этим условиям нет. Выберите «Все файлы» или измените поиск.'),
+        !loading && data && h('div', { className: 'upload-grid' }, visible.map(asset => {
+          const reason = invalidAssetReason(asset.name);
+          return h('article', { className: 'upload-card', key: asset.path },
+            h('div', { className: 'upload-card-heading' }, h('span', { className: 'upload-badge' }, resourceType(asset.name)), h('span', null, (asset.size / 1024 / 1024).toLocaleString('ru', { maximumFractionDigits: 1 }) + ' МБ')),
+            h('h2', null, asset.name),
+            asset.path.slice(UPLOADS_PREFIX.length).includes('/') && h('p', { className: 'upload-path' }, asset.path),
+            asset.entries.length > 0 ? h('ul', { className: 'upload-entries' }, asset.entries.map(entryCard)) :
+              h('div', { className: 'upload-unassigned' }, h('p', null, reason || 'Материал для этого файла ещё не создан.'),
+                !reason && (data.unreadCount > 0 ? h('span', null, 'Создание доступно после полной загрузки списка.') :
+                  h('a', { href: asset.newURL, className: 'upload-button' }, 'Создать материал — категория и возраст'))));
+        })),
+        !loading && data && data.missing.length > 0 && h('section', { className: 'upload-missing' },
+          h('h2', null, 'Материалы без исходного файла'),
+          h('p', null, 'Эти записи ссылаются на файлы, которых больше нет в uploads. Откройте материал и выберите существующий файл.'),
+          h('ul', { className: 'upload-entries' }, data.missing.map(entryCard))));
+    }
+    CMS.registerCustomPage({ id: 'uploads', label: 'Ресурсы из uploads', icon: 'folder_copy', component: ResourcePage });
+  }
+
+  global.TilUploads = { parseEntry, normalizeFile, resourceType, invalidAssetReason, editURL, newURL, loadResources };
+  global.registerUploadsPage = registerUploadsPage;
+})(globalThis);
+
+</script>
+  <script src="https://unpkg.com/@sveltia/cms@0.249.0/dist/sveltia-cms.js" type="module"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
-      CMS.init({
-        config: {
-          load_config_file: false,
-          backend: {
-            name: 'github',
-            repo: 'B07pvl/til-time-site',
-            branch: 'main'
-          },
-          media_folder: 'uploads',
-          public_folder: '/uploads',
-          collections: [
+      const config = {
+  "load_config_file": false,
+  "backend": {
+    "name": "github",
+    "repo": "B07pvl/til-time-site",
+    "branch": "main"
+  },
+  "media_folder": "uploads",
+  "public_folder": "/uploads",
+  "collections": [
+    {
+      "name": "materials",
+      "label": "Оқу материалдары",
+      "folder": "content/materials",
+      "create": true,
+      "slug": "{{slug}}",
+      "fields": [
+        {
+          "label": "Тақырыбы / Название",
+          "name": "title",
+          "widget": "string"
+        },
+        {
+          "label": "Тип ресурса",
+          "name": "resource_type",
+          "widget": "select",
+          "required": false,
+          "options": [
+            "Документ",
+            "Презентация",
+            "Аудио",
+            "Видео",
+            "Изображение",
+            "Другое"
+          ]
+        },
+        {
+          "label": "Бөлім / Раздел",
+          "name": "category",
+          "widget": "select",
+          "options": [
             {
-              name: 'materials',
-              label: 'Оқу материалдары',
-              folder: 'content/materials',
-              create: true,
-              slug: '{{slug}}',
-              fields: [
-                { label: 'Тақырыбы / Название', name: 'title', widget: 'string' },
-                {
-                  label: 'Бөлім / Раздел',
-                  name: 'category',
-                  widget: 'select',
-                  options: [
-                    'Қазақ тілі*** «Тілге бойлау»',
-                    'Аудио және бейнежазбалар',
-                    '«Тілашар» үйірмесі',
-                    'Ата-аналарға кеңес',
-                    'Педагогикалық тәжірибем',
-                    '«Адал азамат» біртұтас тәрбие',
-                    'Қазақ тілі педагогтеріне әдістемелік көмек',
-                    'Тәрбиешілерге әдістемелік көмек'
-                  ]
-                },
-                {
-                  label: 'Педагогтерге подкатегориясы',
-                  name: 'pedagog_subcategory',
-                  widget: 'select',
-                  required: false,
-                  options: [
-                    'Нормативтік құжаттар',
-                    'Перспективалық жоспарлар',
-                    'Ұйымдастырылған іс-әрекет үлгілері',
-                    'Авторлық бағдарламалар',
-                    'Интерактивті ойындар',
-                    'Жасанды интеллект құралдары',
-                    'Мониторинг және диагностика',
-                    'Әдістемелік әзірлемелер',
-                    'Тәжірибе алмасу'
-                  ]
-                },
-                {
-                  label: 'Тәрбиешілерге подкатегориясы',
-                  name: 'educator_subcategory',
-                  widget: 'select',
-                  required: false,
-                  options: [
-                    'Ортаңғы топ (3 жас)',
-                    'Ересек топ (4 жас)',
-                    'Мектепалды топ (5 жас)',
-                    'Күнделікті қолданылатын қазақша сөздер',
-                    'Режимдік сәттердегі тілдік қарым-қатынас',
-                    'Дидактикалық ойындар',
-                    'Көрнекіліктер мен карточкалар',
-                    'Жүктеуге арналған материалдар'
-                  ]
-                },
-                {
-                  label: 'Жас мөлшері (3-5 жас)',
-                  name: 'age',
-                  widget: 'select',
-                  required: false,
-                  options: ['3 жас', '4 жас', '5 жас']
-                },
-                {
-                  label: '🔒 Шектеулі доступ (Тек педагогтерге арналған)',
-                  name: 'is_private',
-                  widget: 'boolean',
-                  default: false,
-                  required: false
-                },
-                { label: 'Мазмұны / Описание', name: 'body', widget: 'markdown', required: false },
-                { label: 'Файл (PDF, Word)', name: 'file', widget: 'file', required: false },
-                { label: 'Күні / Дата', name: 'date', widget: 'datetime' }
-              ]
+              "label": "Қазақ тілі*** «Тілге бойлау»",
+              "value": "Қазақ тілі*** «Тілге бойлау»"
             },
             {
-              name: 'feedback',
-              label: 'Кері байланыс (Пікірлер мен сұрақтар)',
-              folder: 'content/feedback',
-              create: true,
-              slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
-              fields: [
-                { label: 'Аты-жөні / Имя пользователя', name: 'author', widget: 'string' },
-                { label: 'E-mail / Контакт', name: 'email', widget: 'string', required: false },
-                { label: 'Хабарлама / Сообщение', name: 'message', widget: 'text' },
-                { label: 'Күні / Дата', name: 'date', widget: 'datetime' },
-                {
-                  label: 'Статус ответа',
-                  name: 'status',
-                  widget: 'select',
-                  options: ['Жаңа (Новое)', 'Жауап берілді (Отвечено)']
-                },
-                { label: 'Педагогтің жауабы / Ответ педагога', name: 'reply', widget: 'markdown', required: false }
-              ]
+              "label": "Аудио және бейнежазбалар",
+              "value": "Аудио және бейнежазбалар"
+            },
+            {
+              "label": "«Тілашар» үйірмесі",
+              "value": "«Тілашар» үйірмесі"
+            },
+            {
+              "label": "Ата-аналарға кеңес",
+              "value": "Ата-аналарға кеңес"
+            },
+            {
+              "label": "Педагогикалық Тәжірибием",
+              "value": "Педагогикалық тәжірибем"
+            },
+            {
+              "label": "«Адал азамат» біртұтас тәрбие",
+              "value": "«Адал азамат» біртұтас тәрбие"
+            },
+            {
+              "label": "Қазақ тілі педагогтеріне әдістемелік көмек",
+              "value": "Қазақ тілі педагогтеріне әдістемелік көмек"
+            },
+            {
+              "label": "Тәрбиешілерге әдістемелік көмек",
+              "value": "Тәрбиешілерге әдістемелік көмек"
             }
           ]
+        },
+        {
+          "label": "Педагогтерге подкатегориясы",
+          "name": "pedagog_subcategory",
+          "widget": "select",
+          "required": false,
+          "options": [
+            "Нормативтік құжаттар",
+            "Перспективалық жоспарлар",
+            "Ұйымдастырылған іс-әрекет үлгілері",
+            "Авторлық бағдарламалар",
+            "Интерактивті ойындар",
+            "Жасанды интеллект құралдары",
+            "Мониторинг және диагностика",
+            "Әдістемелік әзірлемелер",
+            "Тәжірибе алмасу"
+          ]
+        },
+        {
+          "label": "Тәрбиешілерге подкатегориясы",
+          "name": "educator_subcategory",
+          "widget": "select",
+          "required": false,
+          "options": [
+            "Ортаңғы топ (3 жас)",
+            "Ересек топ (4 жас)",
+            "Мектепалды топ (5 жас)",
+            "Күнделікті қолданылатын қазақша сөздер",
+            "Режимдік сәттердегі тілдік қарым-қатынас",
+            "Дидактикалық ойындар",
+            "Көрнекіліктер мен карточкалар",
+            "Жүктеуге арналған материалдар"
+          ]
+        },
+        {
+          "label": "Возрастная группа / Жас мөлшері",
+          "name": "age",
+          "widget": "select",
+          "required": false,
+          "options": [
+            "3 жас",
+            "4 жас",
+            "5 жас"
+          ],
+          "hint": "Выберите 3, 4 или 5 лет, чтобы материал отображался в соответствующем возрастном фильтре."
+        },
+        {
+          "label": "Скрыть материал с сайта",
+          "name": "is_private",
+          "widget": "boolean",
+          "default": false,
+          "required": false,
+          "hint": "Оставьте выключенным, чтобы карточка была видна всем посетителям."
+        },
+        {
+          "label": "Мазмұны / Описание",
+          "name": "body",
+          "widget": "markdown",
+          "required": false
+        },
+        {
+          "label": "Файл / PDF, Word, презентация, аудио, видео",
+          "name": "file",
+          "widget": "file",
+          "required": true,
+          "hint": "Выберите уже загруженный файл или загрузите новый, затем сохраните весь материал."
+        },
+        {
+          "label": "Күні / Дата",
+          "name": "date",
+          "widget": "datetime"
         }
-      });
+      ],
+      "description": "Материал связывает файл с категорией и возрастом. Старые загрузки доступны на странице «Ресурсы из uploads». После сохранения материал появится у посетителей сайта.",
+      "label_singular": "Материал",
+      "extension": "md",
+      "format": "yaml-frontmatter"
+    },
+    {
+      "name": "feedback",
+      "label": "Кері байланыс (Пікірлер мен сұрақтар)",
+      "folder": "content/feedback",
+      "create": true,
+      "slug": "{{year}}-{{month}}-{{day}}-{{slug}}",
+      "fields": [
+        {
+          "label": "Аты-жөні / Имя пользователя",
+          "name": "author",
+          "widget": "string"
+        },
+        {
+          "label": "E-mail / Контакт",
+          "name": "email",
+          "widget": "string",
+          "required": false
+        },
+        {
+          "label": "Хабарлама / Сообщение",
+          "name": "message",
+          "widget": "text"
+        },
+        {
+          "label": "Күні / Дата",
+          "name": "date",
+          "widget": "datetime"
+        },
+        {
+          "label": "Статус ответа",
+          "name": "status",
+          "widget": "select",
+          "options": [
+            "Жаңа (Новое)",
+            "Жауап берілді (Отвечено)"
+          ]
+        },
+        {
+          "label": "Педагогтің жауабы / Ответ педагога",
+          "name": "reply",
+          "widget": "markdown",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "publish_mode": "simple"
+};
+      registerUploadsPage(CMS, config);
+      if (!location.hash) location.hash = '#/pages/uploads';
+      CMS.init({ config });
     });
   </script>
 </body>
